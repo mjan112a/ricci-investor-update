@@ -8,7 +8,7 @@ import SummaryMetrics from '@/components/SummaryMetrics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useFinancialData } from '@/context/FinancialDataContext';
 import { useEffect, useState } from 'react';
-import { financialData, getLatestData, getMonthlyGrowth } from '@/data/financialData';
+import { financialData } from '@/data/financialData';
 
 export default function Home() {
   const { data, setData } = useFinancialData();
