@@ -8,12 +8,7 @@ import SummaryMetrics from '@/components/SummaryMetrics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useFinancialData } from '@/context/FinancialDataContext';
 import { useEffect, useState } from 'react';
-
-const sampleData = [
-  { Date: '2023-01-01', Revenue: 10000, Expenses: 5000, Profit: 5000 },
-  { Date: '2023-02-01', Revenue: 12000, Expenses: 6000, Profit: 6000 },
-  { Date: '2023-03-01', Revenue: 15000, Expenses: 7000, Profit: 8000 },
-];
+import { financialData, getLatestData, getMonthlyGrowth } from '@/data/financialData';
 
 export default function Home() {
   const { data, setData } = useFinancialData();
@@ -26,7 +21,7 @@ export default function Home() {
         setIsLoading(true);
         // In a real app, this would be an API call
         await new Promise(resolve => setTimeout(resolve, 500));
-        setData(sampleData);
+        setData(financialData);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -37,13 +32,7 @@ export default function Home() {
     loadData();
   }, [setData]);
 
-  const displayData = data.length > 0 ? data : sampleData;
-
-  const LoadingSpinner = () => (
-    <div className="flex justify-center items-center p-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
-  );
+  const displayData = data.length > 0 ? data : financialData;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -51,7 +40,9 @@ export default function Home() {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="space-y-8">
           {isLoading ? (
-            <LoadingSpinner />
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            </div>
           ) : (
             <>
               <SummaryMetrics data={displayData} />
@@ -69,10 +60,10 @@ export default function Home() {
                         tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short' })}
                       />
                       <YAxis 
-                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
                       />
                       <Tooltip 
-                        formatter={(value) => [`$${value.toLocaleString()}`, '']}
+                        formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
                         labelFormatter={(label) => new Date(label).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                       />
                       <Legend />
